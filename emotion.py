@@ -21,7 +21,7 @@ def eye_aspect_ratio(eye):
 # frames the eye must be below the threshold for to set off the
 # alarm
 EYE_AR_THRESH = 0.2
-EYE_AR_CONSEC_FRAMES = 60
+EYE_AR_CONSEC_FRAMES = 37
 # initialize the frame counter
 COUNTER = 0
 # initialize dlib's face detector (HOG-based) and then create
@@ -41,9 +41,10 @@ model = tf.keras.models.model_from_json(open("model.json", "r").read())
 model.load_weights("model.h5")
 
 emotions = ('frowning', 'disgust', 'fear', 'happy',
-            'sad', 'yawning', 'neutral')
+            'concentrating', 'yawning', 'neutral')
 
-patience = [2] * 6
+patience = [4] * 6
+sleeping = False
 
 face_haar_cascade = cv2.CascadeClassifier(cv2.data.haarcascades +
                                           "haarcascade_frontalface_default.xml")
@@ -51,9 +52,23 @@ face_haar_cascade = cv2.CascadeClassifier(cv2.data.haarcascades +
 cap = cv2.VideoCapture(0)
 
 time_counter = 0
-time_interval = 25
+time_interval = 17
+webcam_on = True
 
 while True:
+    pressed_key = cv2.waitKey(10)
+    if pressed_key == ord('r'):
+        # If 'r' key is pressed, then resume the webcam
+        cap = cv2.VideoCapture(0)
+        webcam_on = True
+    elif pressed_key == ord('p'):
+        # If "p" key is pressed, then pause the webcam
+        cap.release()
+        webcam_on = False
+
+    if not webcam_on:
+        continue
+
     ret, test_image = cap.read()
 
     gray_image = cv2.cvtColor(test_image, cv2.COLOR_BGR2GRAY)
@@ -80,7 +95,9 @@ while True:
             # if the eyes were closed for a sufficient number of
             # then print to stdout
             if COUNTER >= EYE_AR_CONSEC_FRAMES:
-                print("sleeping")
+                sleeping = True
+            else:
+                sleeping = False
         # otherwise, the eye aspect ratio is not below the blink
         # threshold, so reset the counter
         else:
@@ -107,7 +124,7 @@ while True:
         predicted_emotion = emotions[max_index]
 
         if max_index == 6:
-            patience = [2] * 6
+            patience = [3] * 6
         else:
             patience[max_index] -= 1
             if patience[max_index] == 0:
@@ -116,10 +133,13 @@ while True:
         cv2.putText(test_image, predicted_emotion, (int(x), int(y)),
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
+    if sleeping:
+        print("sleeping")
+
     resized_image = cv2.resize(test_image, (1000, 700))
     cv2.imshow('Facial emotion analysis ', resized_image)
 
-    if cv2.waitKey(10) == ord('q'):  # wait until 'q' key is pressed
+    if pressed_key == ord('q'):  # wait until 'q' key is pressed
         break
 
 cap.release()
