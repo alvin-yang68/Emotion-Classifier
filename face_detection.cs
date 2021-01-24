@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Diagnostics;
 
-class StandardOutputExample
+class Example
 {
     public static void Main()
     {

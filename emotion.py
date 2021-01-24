@@ -1,4 +1,5 @@
 import os
+import msvcrt
 import cv2
 import numpy as np
 import tensorflow as tf
@@ -56,15 +57,19 @@ time_interval = 17
 webcam_on = True
 
 while True:
-    pressed_key = cv2.waitKey(10)
-    if pressed_key == ord('r'):
-        # If 'r' key is pressed, then resume the webcam
-        cap = cv2.VideoCapture(0)
-        webcam_on = True
-    elif pressed_key == ord('p'):
-        # If "p" key is pressed, then pause the webcam
-        cap.release()
-        webcam_on = False
+    if msvcrt.kbhit():
+        stdin_input = msvcrt.getch().decode("utf-8")
+        print(stdin_input, stdin_input == "p")
+        if stdin_input == "r":
+            # If 'r' key is pressed, then resume the webcam
+            cap = cv2.VideoCapture(0)
+            webcam_on = True
+        elif stdin_input == "p":
+            # If "p" key is pressed, then pause the webcam
+            cap.release()
+            webcam_on = False
+        elif stdin_input == "q":
+            break
 
     if not webcam_on:
         continue
@@ -130,17 +135,8 @@ while True:
             if patience[max_index] == 0:
                 print(predicted_emotion)
 
-        cv2.putText(test_image, predicted_emotion, (int(x), int(y)),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-
     if sleeping:
         print("sleeping")
-
-    resized_image = cv2.resize(test_image, (1000, 700))
-    cv2.imshow('Facial emotion analysis ', resized_image)
-
-    if pressed_key == ord('q'):  # wait until 'q' key is pressed
-        break
 
 cap.release()
 cv2.destroyAllWindows
