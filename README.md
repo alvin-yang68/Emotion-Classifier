@@ -1,4 +1,4 @@
-# Emotion detection
+# Classifying emotional state
 
 ## Motivation
 
