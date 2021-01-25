@@ -1,4 +1,4 @@
-# Classifying emotional state
+# Classifying emotional states
 
 ## Motivation
 
