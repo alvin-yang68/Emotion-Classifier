@@ -1,6 +1,8 @@
 # Emotion detection
 
-## Objective
+## Motivation
+
+This is part of the submission for Hex Cambridge 2021, a Hackathon hosted by the University of Cambridge.
 
 Since the beginning of the COVID-19 pandemic, more and more lectures are delivered online. The aim of this program is to enhance interaction and understanding between teachers and students in online classrooms by creating a Python script that can identify the student's emotion through their webcam using facial recognition AI.
 
