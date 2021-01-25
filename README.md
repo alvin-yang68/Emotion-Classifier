@@ -1,4 +1,4 @@
-# Classifying emotional states
+# Real-time emotion classifier
 
 ## Motivation
 
